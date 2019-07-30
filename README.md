@@ -14,7 +14,7 @@ This repository contains several data for the lecture on the 2nd day of EASW19.
   
   #### b1. You can launch the Jupyter Notebook -> Done.
   
-  #### b2. You cannot -> type ```pip install jupyter```, then ```jupyter notebook``` again.
+  #### b2. You cannot -> type ```pip3 install jupyter```, then ```jupyter notebook``` again.
   
 ### C. If you are the expert of Python and Jupyter Notebook, please help people around you;)
 
