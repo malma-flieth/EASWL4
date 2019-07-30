@@ -13135,7 +13135,26 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Liner-regression-with-MCMC">Liner regression with MCMC<a class="anchor-link" href="#Liner-regression-with-MCMC">&#182;</a></h1><h4 id="In-this-lecture,-we-describe-parameter-estimation-with-Markov-chain-Monre-Carlo-(MCMC)-method.">In this lecture, we describe parameter estimation with Markov chain Monre Carlo (MCMC) method.<a class="anchor-link" href="#In-this-lecture,-we-describe-parameter-estimation-with-Markov-chain-Monre-Carlo-(MCMC)-method.">&#182;</a></h4><h4 id="First,-we-would-like-to-demonstrate-how-to-use-jupyter-notebook-with-Python-for-the-data-analysis.">First, we would like to demonstrate how to use jupyter notebook with Python for the data analysis.<a class="anchor-link" href="#First,-we-would-like-to-demonstrate-how-to-use-jupyter-notebook-with-Python-for-the-data-analysis.">&#182;</a></h4>
+<h1 id="Tutorial-on-Data-Science-in-Astrophysics---EASW9">Tutorial on Data Science in Astrophysics - EASW9<a class="anchor-link" href="#Tutorial-on-Data-Science-in-Astrophysics---EASW9">&#182;</a></h1><h5 id="Prepared-by-Kono-Kai,-Shuntaro-Yoshida-and-Suchetha-Cooray-($\Omega$-Lab,-NU)">Prepared by Kono Kai, Shuntaro Yoshida and Suchetha Cooray ($\Omega$ Lab, NU)<a class="anchor-link" href="#Prepared-by-Kono-Kai,-Shuntaro-Yoshida-and-Suchetha-Cooray-($\Omega$-Lab,-NU)">&#182;</a></h5><h3 id="The-point-of-this-tutorial-is-NOT-to-make-you-data-scientists-in-1.5-hrs.-This-tutorial-will-hopefully-give-you-the-first-steps-for-you-to-experience-&quot;some&quot;-data-science-techniques.">The point of this tutorial is NOT to make you data scientists in 1.5 hrs. This tutorial will hopefully give you the first steps for you to experience "some" data science techniques.<a class="anchor-link" href="#The-point-of-this-tutorial-is-NOT-to-make-you-data-scientists-in-1.5-hrs.-This-tutorial-will-hopefully-give-you-the-first-steps-for-you-to-experience-&quot;some&quot;-data-science-techniques.">&#182;</a></h3><p>We will cover the following areas of data science</p>
+<ul>
+<li>Data input</li>
+<li>Simple data handling</li>
+<li>Data visualization</li>
+<li>Data analysis with linear regression (example with a package)</li>
+<li>Parameter estimation (linear regression) with Markov chain Monte Carlo (MCMC)</li>
+</ul>
+<h3 id="For-data-science,-Python-with-jupyter-notebooks-are-a-very-convinient-tool.-Therefore,-we-would-like-to-demonstrate-how-to-use-them.">For data science, Python with jupyter notebooks are a very convinient tool. Therefore, we would like to demonstrate how to use them.<a class="anchor-link" href="#For-data-science,-Python-with-jupyter-notebooks-are-a-very-convinient-tool.-Therefore,-we-would-like-to-demonstrate-how-to-use-them.">&#182;</a></h3><h3 id="Firstly,-why-jupyter-notebooks?">Firstly, why jupyter notebooks?<a class="anchor-link" href="#Firstly,-why-jupyter-notebooks?">&#182;</a></h3><p>From the official documentation,</p>
+<p><em>Notebook documents (or “notebooks”, all lower case) are documents produced by the Jupyter Notebook App, which contain both computer code (e.g. python) and rich text elements (paragraph, equations, figures, links, etc…). Notebook documents are both human-readable documents containing the analysis description and the results (figures, tables, etc..) as well as executable documents which can be run to perform data analysis.</em></p>
+<p><a href="https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/what_is_jupyter.html#notebook-document">https://jupyter-notebook-beginner-guide.readthedocs.io/en/latest/what_is_jupyter.html#notebook-document</a></p>
+<p>With that out of the way, let's start data science!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Today-we-will-work-with-data-from-a-galaxy-survey-and-do-some-simple-data-analysis.">Today we will work with data from a galaxy survey and do some simple data analysis.<a class="anchor-link" href="#Today-we-will-work-with-data-from-a-galaxy-survey-and-do-some-simple-data-analysis.">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -13147,11 +13166,16 @@ div#notebook {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># import python libraries for this notebook</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tnrange</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> <span class="c1"># Standard plotting library in python</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>              <span class="c1"># Fundamnetal scientific computing library for handling arrays, etc. </span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>             <span class="c1"># Python Data Analysis Library for easy-to-use data structures</span>
+                                
+<span class="c1"># Scipy is an important scientific computing library with various useful functions</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">stats</span>         <span class="c1"># stats module contain many statatistical funtions</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">optimize</span>      <span class="c1"># optimize module provides functions for minimizing (or maximizing) </span>
+                                <span class="c1">#     objective functions</span>
+
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tnrange</span>        <span class="c1"># Progress bar module for interactivity</span>
 </pre></div>
 
     </div>
@@ -13162,10 +13186,10 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>If you find "ImportError", you might miss install some libraries.
-In that case, you run the following line on a new cell:</p>
-<blockquote><p>if you can use conda -&gt; !conda install """library name(e.g. scipy, tqdm)""" --yes</p>
-<p>if you can use pip -&gt; !pip install """library name(e.g. scipy, tqdm)"""</p>
+<p>If you get an "ImportError", you might be missing some libraries.
+In that case, you should run the following lines on a new cell to install those libraries:</p>
+<blockquote><p>if you can use conda -&gt; !conda install {library name(e.g. scipy, tqdm)} --yes</p>
+<p>if you can use pip -&gt; !pip3 install {library name(e.g. scipy, tqdm)}</p>
 </blockquote>
 
 </div>
@@ -13199,11 +13223,12 @@ In that case, you run the following line on a new cell:</p>
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read the csv file which contains VLA-COSMOS survay data (Laigle et al. 2016; Smolcic et al. 2017)</span>
-<span class="n">df_COSMOS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;PythonLectureAtEASW19.csv&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Read the csv file that contain VLA-COSMOS survey data (Laigle et al. 2016; Smolcic et al. 2017)</span>
+<span class="n">df_COSMOS</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;DatafileForLecture.csv&#39;</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="c1"># Set the number of columns showing on this notebook</span>
-<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="s1">&#39;display.max_info_columns&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.max_columns&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> 
+              <span class="s1">&#39;display.max_info_columns&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13214,7 +13239,7 @@ In that case, you run the following line on a new cell:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="2)-Check-the-data">2) Check the data<a class="anchor-link" href="#2)-Check-the-data">&#182;</a></h2><p>Pandas has many attributes for a quick-looking at the datafile.</p>
+<h2 id="2)-Simple-data-handling">2) Simple data handling<a class="anchor-link" href="#2)-Simple-data-handling">&#182;</a></h2><p>Pandas makes it easier to see "what" kind of data is in the data frame compared to a "traditional" array using numpy.</p>
 
 </div>
 </div>
@@ -13292,7 +13317,8 @@ In that case, you run the following line on a new cell:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="3)-Try-to-make-a-plot">3) Try to make a plot<a class="anchor-link" href="#3)-Try-to-make-a-plot">&#182;</a></h2>
+<h2 id="3)-Data-visualization">3) Data visualization<a class="anchor-link" href="#3)-Data-visualization">&#182;</a></h2><p>We can first try to understand the redshift distribution of our galaxy sample. The best for this purpose is a histogram.</p>
+
 </div>
 </div>
 </div>
@@ -13302,18 +13328,28 @@ In that case, you run the following line on a new cell:</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Plot a histogram of redshift for all VLA-COSMOS samples</span>
-<span class="c1"># pandas dataframe is easy to plot with attributes (e.g. .hist(), .plot())</span>
-<span class="n">df_COSMOS</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">column</span><span class="o">=</span><span class="s1">&#39;zbest&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">rwidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="p">[</span><span class="s1">&#39;zbest&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">rwidth</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">)</span>
+
+<span class="c1"># or just simply</span>
+<span class="c1"># plt.hist(df_COSMOS[&#39;zbest&#39;], bins=15, rwidth=0.9, color=&#39;royalblue&#39;)</span>
+
+<span class="c1"># A pandas dataframe is easy to plot with attributes (e.g. .hist(), .plot())</span>
+<span class="c1"># df_COSMOS.hist(column=&#39;zbest&#39;, figsize=(16, 9), bins=15, rwidth=0.9, color=&#39;royalblue&#39;)</span>
+
+<span class="c1"># Set the title of the figure</span>
+<span class="c1">#ax.set_title(&#39;Redshift distribuion of VLA-COSMOS sample&#39;)</span>
 
 <span class="c1"># Set the x and y labels</span>
-<span class="c1">#plt.xlabel(&#39;Redshift&#39;)</span>
-<span class="c1">#plt.ylabel(&#39;Counts&#39;)</span>
+<span class="c1">#ax.set_xlabel(&#39;Redshift&#39;)</span>
+<span class="c1">#ax.set_ylabel(&#39;Number Counts&#39;)</span>
 
 <span class="c1"># Change the y-scale into &#39;log&#39;</span>
-<span class="c1">#plt.yscale(&#39;log&#39;)</span>
+<span class="c1">#ax.set_yscale(&#39;log&#39;)</span>
 
 <span class="c1"># Save this figure (if you want to output pdf file, you change .png into .pdf)</span>
-<span class="c1">#plt.savefig(&#39;HistogramOfRedshift.png&#39;)</span>
+<span class="c1"># plt.savefig(fname=&quot;Redshift_dist_VLA-COSMOS.png&quot;, dpi = 200)</span>
 </pre></div>
 
     </div>
@@ -13324,12 +13360,7 @@ In that case, you run the following line on a new cell:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="4)-Try-to-do-the-Markov-Chain-Monte-Carlo-(MCMC)">4) Try to do the Markov Chain Monte Carlo (MCMC)<a class="anchor-link" href="#4)-Try-to-do-the-Markov-Chain-Monte-Carlo-(MCMC)">&#182;</a></h2><p>Here, 
-The distiburion of $M_*{\mbox -}L_K$ seems to be able to described as a liner relation with two parameters $a$ and $b$ which correspond to slope and intercept respectively.
-$$
-\log (M_*/M_{\odot})=a\log(L_K)+b
-$$
-The aim of this lecture is to detrmine these two parameters and their distribution with MCMC method.</p>
+<p>Now let's try plotting a 2D scatter plot with two data columns. Let us say we choose stellar mass ($M_*$) and luminosity in the K-band ($L_K$) in log space.</p>
 
 </div>
 </div>
@@ -13339,17 +13370,19 @@ The aim of this lecture is to detrmine these two parameters and their distributi
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Hereafter, we focus on star forming galaxies for more secure calculation</span>
-<span class="n">df_SFG</span> <span class="o">=</span> <span class="n">df_COSMOS</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;SFG == 1&#39;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_COSMOS</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_COSMOS</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;VLA-COSMOS galaxy&#39;</span><span class="p">)</span>
 
-<span class="c1"># Plot the figure</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Star forming galaxy&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+<span class="c1"># Set axis labels</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+
+<span class="c1"># Set plotting range of x</span>
+<span class="c1"># ax.set_xlim([6, 13])</span>
 
 <span class="c1"># When you want to show the label, you have to run the following line</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13360,11 +13393,143 @@ The aim of this lecture is to detrmine these two parameters and their distributi
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Fisrtly, we need to assume a prior distribution of parameters.
-In this lecture, we assume that the prior distribution of intercept and slope is normal distribution with mean $\mu=0.5$ and standard deviation $\sigma=0.5$.
+<p>Here, the distribution of $M_*{\mbox -}L_K$ seems to have a linear relation with two parameters $a$ and $b$ which correspond to slope and intercept respectively.</p>
+$$
+\log (M_*/M_{\odot})=a\log(L_K)+b
+$$<p>We have considered the whole sample. However, we are now interested only in star forming galaxies (SFGs). We limit our sample to galaxy with the "SFG" flag equal to one.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We define a new DataFrame with only SFG</span>
+<span class="n">df_SFG</span> <span class="o">=</span> <span class="n">df_COSMOS</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;SFG == 1&#39;</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFGs&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>By visual inspection, the linear relationship appears to be much more apparent now.</p>
+<h3 id="Let-us-try-linear-least-squares-regression-for-these-sets-of-measurements!">Let us try linear least-squares regression for these sets of measurements!<a class="anchor-link" href="#Let-us-try-linear-least-squares-regression-for-these-sets-of-measurements!">&#182;</a></h3><h2 id="4)-Linear-Regression">4) Linear Regression<a class="anchor-link" href="#4)-Linear-Regression">&#182;</a></h2><p>Let us try two methods to do regression.</p>
+<p>First method is using the <code>scipy.stats</code> module. This module contains the <code>linregress</code>, function for linear least-squares regression.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;slope: </span><span class="si">%f</span><span class="s2">    intercept: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The second method is by using <code>scipy.optimize.curve_fit</code>. This method allows fitting any user defined function.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">linear_curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="n">popt</span><span class="p">,</span> <span class="n">pcov</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="n">linear_curve</span><span class="p">,</span> <span class="n">xdata</span><span class="o">=</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">ydata</span><span class="o">=</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;slope: </span><span class="si">%f</span><span class="s2">    intercept: </span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">popt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">popt</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Simple as that! We get similar results from both the methods. Let us plot the <code>lingress</code> result on our scatter plot.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFGs&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+
+<span class="n">x_plot</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># Plotting the fit result</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x_plot</span> <span class="o">+</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;stats.linregress&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">25.5</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\log{(L_K)}=</span><span class="si">%01.2f</span><span class="s1"> \times \log{(M_*/M_{\odot})}+</span><span class="si">%01.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">),</span> 
+         <span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="5)-Parameter-estimation-by-Markov-Chain-Monte-Carlo">5) Parameter estimation by Markov Chain Monte Carlo<a class="anchor-link" href="#5)-Parameter-estimation-by-Markov-Chain-Monte-Carlo">&#182;</a></h2><p>The estimated slope and intercept are just parameters. <strong>We can use a Bayesian approach and use Markov Chain Monte Carlo (MCMC) to determine our parameters and their posterior distributions</strong>.</p>
+<p>Most important advantage of using a bayesian approach is that we can encorporate a prior for our parameter estimates. As the problems get more complicated, priors are crucial in guiding to acceptable results.</p>
+<p>Let us try to use MCMC to find the parameters of our linear model to $M_*{\mbox -}L_K$ data.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Firstly, we need to assume a prior distribution of parameters.</p>
+<p>In this tutorial, we assume that the prior distribution of intercept and slope is normal distribution with mean $\mu=0.5$ and standard deviation $\sigma=0.5$.</p>
 $$
 \mathcal{N}(\mu,\sigma)=\frac{1}{\sqrt{2\pi \sigma^2}}\exp{\biggl(-\frac{(x-\mu)^2}{2\sigma^2}\biggr)}
-$$</p>
+$$<p>The likelihood function is obtained as below.</p>
+$$
+L ( p ) = \prod _ { i = 1 } ^ { n } f \left( x _ { i } ; p \right)
+$$<p>For computational reasons, the log-likelihood is often used.</p>
+<p>Then the posterior distribution for each step can be calculated using the likelihood and prior probability.</p>
 
 </div>
 </div>
@@ -13377,35 +13542,19 @@ $$</p>
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">prior_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="c1"># intercept</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    <span class="c1"># slope</span>
-    <span class="n">a_prior</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">b_prior</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">a_prior</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b_prior</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The data is assumed to have normal disribution. Therefore the likelihood fucntion is obtained as below. To avoid underflow, the log-likelihood is often used.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">likelihood_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
     <span class="n">a</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>    <span class="c1"># intercept</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>    <span class="c1"># slope</span>
-    <span class="n">y_predict</span> <span class="o">=</span> <span class="n">a</span>  <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span>
-    <span class="n">likelihoods</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">y_predict</span><span class="p">,</span> <span class="n">sigma_e</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">])</span> 
+    <span class="n">y_predict</span> <span class="o">=</span> <span class="n">a</span>  <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span> 
+    <span class="n">likelihoods</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">y_predict</span><span class="p">,</span> <span class="n">sigma_e</span><span class="p">)</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">])</span> 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">likelihoods</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">posterior_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">log_likelihood</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">prior_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13416,48 +13565,16 @@ $$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The posterior distribution for each step can be calculated from likelihood probability and prior probability.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">posterior_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">likelihood_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">prior_probability</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">proposal_function</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">a_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-    <span class="n">b_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-    <span class="n">theta_new</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_new</span><span class="p">,</span> <span class="n">b_new</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">theta_new</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This part gives initial condistion of the Markov chain.  Here, $(a^{(0)},b^{(0)})=(0.5,0.5)$.</p>
+<p>The posterior distribution can be used to estimate our parameters. In this case from our prior and the liklihoods, we expect the posterior to have normal distributions with the mean as the best estimates of the parameters.</p>
+<h3 id="Here-onwards,-we-perform-the-Markov-chain-Monte-Carlo-(MCMC).">Here onwards, we perform the Markov chain Monte Carlo (MCMC).<a class="anchor-link" href="#Here-onwards,-we-perform-the-Markov-chain-Monte-Carlo-(MCMC).">&#182;</a></h3><p>MCMC is a method for obtaining a sequence of random samples from a probability distribution from which direct sampling is difficult. This sequence can be used to approximate the distribution (e.g. to generate a histogram) or to compute an integral (e.g. an expected value). In this case, we want the posterior distributions of the parameters. Sequential samples are simple Markov chains, that are random walks that depend only on the last location.</p>
+<p>We will use the most famous MCMC algorithm known as the <strong>Metropolis-Hastings (MH) algorithm</strong>.</p>
+<p><strong>The goal is to design the Markov chain to converge to the desired posterior distribution.</strong></p>
+<p>Therefore, as more and more sample values are produced, the distribution of values more closely approximates the desired distribution (i.e. posterior distribution).</p>
+<p>The algorithm procceeds as follows;</p>
+<ol>
+<li>Initialization - Determine the initial value of parameter $\theta^{(0)}$. Here, ${\bf \theta}^{(0)}=(0.5,0.5)$ this time.</li>
+</ol>
+<p>This part gives initial condition of the Markov chain.  Here, $(a^{(0)},b^{(0)})=(0.5,0.5)$ and set the iteration count.</p>
 
 </div>
 </div>
@@ -13468,11 +13585,9 @@ $$</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sigma_e</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">N_iteration</span> <span class="o">=</span> <span class="mi">5000</span>          <span class="c1"># the number of the iteration</span>
-<span class="n">theta_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>        <span class="c1"># start value</span>
-<span class="n">results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">N_iteration</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>         
-<span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta_0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta_0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">N_iteration</span> <span class="o">=</span> <span class="mi">5000</span>           <span class="c1"># the number of the iteration</span>
+<span class="n">theta_0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>         <span class="c1"># start value</span>
+<span class="c1"># theta_0 = [20, 1]          # start value</span>
 </pre></div>
 
     </div>
@@ -13483,23 +13598,29 @@ $$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is a sampling part. In each step of Markov chain, we adopt Mertopolis-Hastings (MH) algorithm. The MH algorithm is defined as below,</p>
-<blockquote><p>Step1. Determine the initial value of parameter $\theta^{(0)}$. Here, ${\bf \theta}^{(0)}=(0.5,0.5)$ this time.</p>
-<p>Step2. Calculate the acceptance probability $\alpha$.
-$$
-\alpha(\theta^{(t-1)},\tilde{\theta}) = \min{\biggl\{1,\frac{q(\tilde{\theta}|\theta^{(t-1)})}{q(\theta^{(t-1)}|\tilde{\theta})}\frac{p(\tilde{\theta})}{p(\theta^{(t-1)})} \biggr\}}
-$$</p>
-<p>Step3. Generate a random number with a uniform distribution, $U \in [0,1]$.</p>
-<p>Step4. The parameter for next step is determined from 
-$$
-\theta^{(t)}= \begin{cases}
-\tilde{\theta} &amp; (U \leq \alpha(\theta^{(t-1)},\tilde{\theta}) \\
-\theta^{(t-1)} &amp; (U&gt;\alpha(\theta^{(t-1)},\tilde{\theta})).
-\end{cases}
-$$</p>
-<p>Step5. Repeat step 2, 3, 4 and obtain parameters $\theta^{0},\ \theta^{(1)},...$</p>
-</blockquote>
-<p>This part takes about 10 minutes...</p>
+<ol>
+<li><p>For each iteration from here onwards,</p>
+<ul>
+<li><p><strong>Generate</strong>: Propose a new value for $t^{\text{th}}$ value of $\theta$.</p>
+</li>
+<li><p><strong>Calculate</strong>: Calculate the acceptance probability $\alpha$ of the newly proposed $\theta^{(t)}$.</p>
+<p>$$
+   \alpha(\theta^{(t-1)},\tilde{\theta}) = \min{\biggl\{1,\frac{q(\tilde{\theta}|\theta^{(t-1)})}{q(\theta^{(t-1)}|\tilde{\theta})}\frac{p(\tilde{\theta})}{p(\theta^{(t-1)})} \biggr\}}
+  $$</p>
+</li>
+<li><p><strong>Accept or Reject</strong>: The decicsion whether the new parameter is to be accepted is decided by the following</p>
+<p>$$
+  \theta^{(t)}= \begin{cases}
+  \tilde{\theta} &amp; (U \leq \alpha(\theta^{(t-1)},\tilde{\theta}) \\
+  \theta^{(t-1)} &amp; (U&gt;\alpha(\theta^{(t-1)},\tilde{\theta})).
+  \end{cases}
+  $$
+  where $U$ is a random number drawn from a uniform distribution and $U \in [0,1]$.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>The following is done below. This may take a relatively long time depending on your computer.</p>
 
 </div>
 </div>
@@ -13509,17 +13630,32 @@ $$</p>
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">tnrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N_iteration</span><span class="p">):</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># The function that generates a new parameter for each iteration</span>
+<span class="k">def</span> <span class="nf">proposal_function</span><span class="p">(</span><span class="n">theta</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">theta</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">a_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">b_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">theta_new</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_new</span><span class="p">,</span> <span class="n">b_new</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">theta_new</span>
 
-    <span class="n">theta_old</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+<span class="c1"># Define an array for the Markov chains</span>
+<span class="n">MCMC_result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">N_iteration</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>         
+<span class="n">MCMC_result</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta_0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">MCMC_result</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">theta_0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># MCMC iteration</span>
+<span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">tnrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N_iteration</span><span class="p">):</span>
+
+    <span class="n">theta_old</span> <span class="o">=</span> <span class="n">MCMC_result</span><span class="p">[</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
     <span class="n">theta_proposal</span> <span class="o">=</span> <span class="n">proposal_function</span><span class="p">(</span><span class="n">theta_old</span><span class="p">)</span>
 
     <span class="n">prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">posterior_probability</span><span class="p">(</span><span class="n">theta_proposal</span><span class="p">)</span> <span class="o">-</span> <span class="n">posterior_probability</span><span class="p">(</span><span class="n">theta_old</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">prob</span><span class="p">:</span>
-        <span class="n">results</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta_proposal</span>    
+        <span class="n">MCMC_result</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta_proposal</span>    
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">results</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta_old</span>
+        <span class="n">MCMC_result</span><span class="p">[</span><span class="n">step</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">theta_old</span>
 </pre></div>
 
     </div>
@@ -13530,11 +13666,11 @@ $$</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>In the Markov chain sampling, the chain is assumed to converge to an invariant distribution. A distirbution $\bar{p}$ is an invariant distribution of transition distirbution $Q(\theta,\tilde{\theta})$ when
+<p>In the Markov chain sampling, the chain is assumed to converge to an invariant distribution. A distirbution $\bar{p}$ is an invariant distribution of transition distirbution $Q(\theta,\tilde{\theta})$ when</p>
 $$
 \bar{p}(\tilde{\theta})=\int^{\infty}_{\infty} \bar{p}(\theta)Q(\theta,\tilde{\theta}).
-$$
-Particulary, the posterior probability $p(\theta|D)$ need to be an invariant distribution for a Markov chain. Therefore, the first several steps are to be throw out since they are not still an invariant distribution. This process is called <strong>burn-in</strong>. We can set the number of the steps to be throw out in the box below. A small number may cause to accept posterior distribution that is not converge to an invariant distribution.</p>
+$$<p>Particulary, the posterior probability $p(\theta|D)$ need to be an invariant distribution for a Markov chain. The invariant distributions is the case when the Markov chain has converged. Therefore, the first several steps are to be throwed out. This fraction of the chain is called <strong>burn-in fraction</strong>. The behavior of the burn-in fraction is dependant on where your initialization points are.</p>
+<p>We can set the number of the steps to be throw out in the box below. A small number may cause to accept posterior distribution that has not converged to an invariant distribution.</p>
 
 </div>
 </div>
@@ -13545,8 +13681,12 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">burn_in</span> <span class="o">=</span> <span class="mi">1000</span>
-<span class="n">theta_posterior</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">burn_in</span><span class="p">:,</span> <span class="p">:]</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">theta_posterior</span> <span class="o">=</span> <span class="n">MCMC_result</span><span class="p">[</span><span class="n">burn_in</span><span class="p">:,</span> <span class="p">:]</span>
+
+<span class="c1"># The estimates of the parameters can be done of the posterior distribution </span>
+<span class="n">est_params</span> <span class="o">=</span> <span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The estimated parameters by mean of the Markov chain are,&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;slope =&quot;</span><span class="p">,</span> <span class="n">est_params</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot; &amp; intercept =&quot;</span><span class="p">,</span> <span class="n">est_params</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -13557,9 +13697,8 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Plot posterior values of intercept and slope.</p>
-<p>You can see the congergence to the mean value (red-dashed line) if MCMC has succeeded.
-(Red region shows a burn_in region removed for calculating the mean value of each parameter)</p>
+<p>Let us plot the posterior values of intercept and slope and see the behavior of the Mrkov chain. We can see the convergence to the mean value (red-dashed line) if MCMC has succeeded.</p>
+<p><em>(Burn-in region is removed for calculating the mean value of each parameter)</em></p>
 
 </div>
 </div>
@@ -13569,22 +13708,22 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
 <span class="n">x_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N_iteration</span><span class="p">,</span> <span class="n">N_iteration</span><span class="p">)</span>
 <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">burn_in</span><span class="p">],</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> 
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration&#39;</span><span class="p">)</span>
-<span class="c1">#ax1.set_xscale(&#39;log&#39;)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Intercept&#39;</span><span class="p">)</span>
 
 <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">results</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">theta_posterior</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">fill_between</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">burn_in</span><span class="p">],</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">MCMC_result</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> 
+                 <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Iteration&#39;</span><span class="p">)</span>
-<span class="c1">#ax2.set_xscale(&#39;log&#39;)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;slope&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -13596,7 +13735,7 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The final distribution of the two parameters are displayed as histograms.</p>
+<p>We know that the posterior distribution is normal. Therefore, we can estimate the mean of the normal by fitting normal distributions to the results from the MCMC. The posterior distribution of the two parameters can be displayed as histograms.</p>
 
 </div>
 </div>
@@ -13607,26 +13746,30 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># gaussian fitting for an intercept</span>
-<span class="n">param1</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">param1</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
 
 <span class="c1"># gaussian fitting and plot for a slope</span>
-<span class="n">param2</span> <span class="o">=</span> <span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">param2</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
-<span class="n">x_plot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">x_plot_MCMC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
 
 <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="n">param1</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mean=</span><span class="si">%s</span><span class="s1">, std=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param1</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot_MCMC</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_plot_MCMC</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="n">param1</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span>
+         <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mean=</span><span class="si">%s</span><span class="s1">, std=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                                        <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param1</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
 <span class="n">ax1</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Posterior -- Intercept&#39;</span><span class="p">)</span>
 
 <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="n">param2</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mean=</span><span class="si">%s</span><span class="s1">, std=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">theta_posterior</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot_MCMC</span><span class="p">,</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_plot_MCMC</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scale</span><span class="o">=</span><span class="n">param2</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span>
+         <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;mean=</span><span class="si">%s</span><span class="s1">, std=</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                                        <span class="s1">&#39;</span><span class="si">{:.2f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
-<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span>
+<span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="n">ax2</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="s1">&#39;Posterior -- Slope&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -13638,7 +13781,7 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Finally, we can confirm that the model line with obtained parameters represents the original data distribution.</p>
+<p>Finally, we can confirm that the obtained parameters using MCMC represent the original distribution of data. We compare our results with th result of linear regression.</p>
 
 </div>
 </div>
@@ -13648,14 +13791,41 @@ Particulary, the posterior probability $p(\theta|D)$ need to be an invariant dis
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+
 <span class="n">x_plot</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">1000</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Star forming galaxy&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_plot</span> <span class="o">+</span> <span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;estimated&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">25.5</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$\log{(L_K)}=</span><span class="si">%01.2f</span><span class="s1"> \times \log{(M_*/M_{\odot})}+</span><span class="si">%01.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;MASS_BEST&#39;</span><span class="p">],</span> <span class="n">df_SFG</span><span class="p">[</span><span class="s1">&#39;L_K&#39;</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;SFGs&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_plot</span> <span class="o">+</span> <span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">,</span> 
+         <span class="n">label</span><span class="o">=</span><span class="s1">&#39;MCMC&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">25.5</span><span class="p">,</span> 
+         <span class="sa">r</span><span class="s1">&#39;$\log{(L_K)}=</span><span class="si">%01.2f</span><span class="s1"> \times \log{(M_*/M_{\odot})}+</span><span class="si">%01.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">param2</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">param1</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+         <span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;crimson&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x_plot</span><span class="p">,</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">x_plot</span> <span class="o">+</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> 
+        <span class="n">label</span><span class="o">=</span><span class="s1">&#39;stats.linregress&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> 
+         <span class="sa">r</span><span class="s1">&#39;$\log{(L_K)}=</span><span class="si">%01.2f</span><span class="s1"> \times \log{(M_*/M_{\odot})}+</span><span class="si">%01.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">),</span> 
+         <span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (M_*/M_{\odot})$&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\log (L_K$ /${\rm erg\ s^{-1}\ Hz^{-1}})$&#39;</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;best&#39;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
