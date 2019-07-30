@@ -20,17 +20,26 @@ This repository contains several data for the lecture on the 2nd day of EASW19.
 
 ---
 
-## [MCMCForSummerSchool.ipynb]
+## [Workbook.ipynb]
 
 This file is a jupytyer notebook which you can see on the Jupyter Notebook or JupyterLab.
 In this notebook, we demonstrate how to use Python especially for the data analysis and Markov chain Monte Carlo (MCMC) method for the parameter estimation.
 
-## [PythonLectureAtEASW19.csv]
+## [DatafileForLecture.csv]
 
 This csv file is a data used for this lecture.
 This data is obtained from Laigle et al. 2016 and Smolcic et al. 2017 after the cross-matching.
 For this lecture, we removed many columns for simplicity (original data has more than 500 columns).
 Please go to see those papers and try to analyze the original data if you are further interested in their research.
+
+## [Textbook.html]
+
+This html file contains Python codes for this workshop. You can see interesting results by yourself if you write Python codes based on this html file.
+
+## [CompleteNotebook.html]
+
+This html file contains all codes and results which we will show in the workshop. This file might be helpful for your study.
+We do NOT recommend you to look at this file before getting results by yourself.
 
 ---
 
